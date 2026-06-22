@@ -9,18 +9,48 @@ Este proyecto integra un panel de control con ESP32, un sensor de temperatura DS
 - Arduino IDE: para abrir y cargar `ESP32/ESP32.ino`
 - Cadesimu: para abrir `PLC 230RCL/230 RCL - Diagrama de Fuerza.cad`
 
-## Estructura del repositorio
-
-- `ESP32/ESP32.ino` – código Arduino para el ESP32
-- `ESP32/ESP32 - Diagrama.pdsprj` – proyecto de Proteus
-- `PLC 230RCL/230 RCL - Diagrama de Bloques.lsc` – diagrama de PLC
-- `PLC 230RCL/230 RCL - Diagrama de Fuerza.cad` – diagrama de fuerza (Cadesimu)
-- `Recursos/ESP32.png` – imagen del proyecto ESP32
-- `Recursos/PLC 230 RCL.png` – imagen del proyecto PLC
-
 ## Descripción general del proyecto
 
 El ESP32 actúa como un servidor web en modo punto de acceso (AP). Al conectar un navegador a la red Wi-Fi creada por el ESP32, se muestra una interfaz SCADA para controlar una salida y visualizar temperatura y métricas de comunicación.
+
+### Diagrama de componentes
+
+```mermaid
+flowchart TD
+    Cliente[Navegador / PC]
+    AP[ESP32 Wi-Fi AP]
+    Sensor[DS18B20]
+    Foco[Pulso Foco (PIN 21)]
+    Corte[Corte de Línea (PIN 19)]
+
+    Cliente -->|HTTP| AP
+    AP -->|1-Wire| Sensor
+    AP -->|Digital| Foco
+    AP -->|Digital| Corte
+```
+
+### Diagrama de flujo del firmware
+
+```mermaid
+sequenceDiagram
+    participant ESP32
+    participant Sensor as DS18B20
+    participant Usuario as Navegador
+
+    ESP32->>ESP32: setup() inicia AP y servidor
+    Usuario->>ESP32: GET / (solicita página web)
+    ESP32-->>Usuario: HTML del panel SCADA
+    loop cada 2s
+        Usuario->>ESP32: GET /datos
+        ESP32->>Sensor: requestTemperatures()
+        Sensor-->>ESP32: devuelve temperatura
+        ESP32-->>Usuario: JSON con temperatura y métricas
+    end
+    Usuario->>ESP32: POST /toggle
+    ESP32->>ESP32: pulsa salida del foco
+    Usuario->>ESP32: POST /corte
+    ESP32->>ESP32: activa/desactiva corte de línea
+```
 
 ### Funcionalidad principal del ESP32
 
@@ -77,7 +107,7 @@ La interfaz incluye:
 
 ![ESP32](Recursos/ESP32.png)
 
-![PLC 230 RCL](Recursos/PLC 230 RCL.png)
+![PLC-230-RCL](Recursos/PLC 230 RCL.png)
 
 ## Notas adicionales
 
