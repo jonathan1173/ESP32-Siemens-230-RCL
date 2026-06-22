@@ -13,45 +13,6 @@ Este proyecto integra un panel de control con ESP32, un sensor de temperatura DS
 
 El ESP32 actúa como un servidor web en modo punto de acceso (AP). Al conectar un navegador a la red Wi-Fi creada por el ESP32, se muestra una interfaz SCADA para controlar una salida y visualizar temperatura y métricas de comunicación.
 
-### Diagrama de componentes
-
-```mermaid
-flowchart TD
-    Cliente[Navegador / PC]
-    AP[ESP32 Wi-Fi AP]
-    Sensor[DS18B20]
-    Foco[Pulso Foco (PIN 21)]
-    Corte[Corte de Línea (PIN 19)]
-
-    Cliente -->|HTTP| AP
-    AP -->|1-Wire| Sensor
-    AP -->|Digital| Foco
-    AP -->|Digital| Corte
-```
-
-### Diagrama de flujo del firmware
-
-```mermaid
-sequenceDiagram
-    participant ESP32
-    participant Sensor as DS18B20
-    participant Usuario as Navegador
-
-    ESP32->>ESP32: setup() inicia AP y servidor
-    Usuario->>ESP32: GET / (solicita página web)
-    ESP32-->>Usuario: HTML del panel SCADA
-    loop cada 2s
-        Usuario->>ESP32: GET /datos
-        ESP32->>Sensor: requestTemperatures()
-        Sensor-->>ESP32: devuelve temperatura
-        ESP32-->>Usuario: JSON con temperatura y métricas
-    end
-    Usuario->>ESP32: POST /toggle
-    ESP32->>ESP32: pulsa salida del foco
-    Usuario->>ESP32: POST /corte
-    ESP32->>ESP32: activa/desactiva corte de línea
-```
-
 ### Funcionalidad principal del ESP32
 
 - Crea un punto de acceso Wi-Fi con SSID `Panel_de_Control` y contraseña `12345678`
@@ -107,7 +68,7 @@ La interfaz incluye:
 
 ![ESP32](Recursos/ESP32.png)
 
-![PLC-230-RCL](Recursos/PLC 230 RCL.png)
+![PLC230RCL](Recursos/PLC 230 RCL.png)
 
 ## Notas adicionales
 
