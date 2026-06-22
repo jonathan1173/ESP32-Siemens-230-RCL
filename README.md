@@ -68,7 +68,7 @@ La interfaz incluye:
 
 ![ESP32](Recursos/ESP32.png)
 
-![PLC230RCL](Recursos/PLC 230 RCL.png)
+![PLC 230 RCL](Recursos/PLC230RCL.png)
 
 ## Notas adicionales
 
